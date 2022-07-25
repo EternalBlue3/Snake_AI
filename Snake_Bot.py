@@ -95,6 +95,30 @@ class Snake:
         if left:
             return "L"
         
+        # Secondary Check if up/down/right/left all return false
+        # Check if we can eliminate a direction
+        # If the body is between the snake and apple along the x-axis we can't
+        optim = True
+        for x in body:
+            # Check if apple has same x as body   Check if apple is below the body
+            if end_pos[0] == x[0] and end_pos[1] > x[1]:
+                for y in body:
+                    if start_pos[0] == y[0] and start_pos[1] < y[1]:
+                        optim = False
+                        
+        # Check inverse of above
+        for x in body:
+            if end_pos[0] == x[0] and end_pos[1] < x[1]:
+                for y in body:
+                    if start_pos[0] == y[0] and start_pos[1] > y[1]:
+                        optim = False
+        
+        if optim:
+            if start_pos[0] > end_pos[0]:
+                out.remove("R")
+            if start_pos[0] < end_pos[0]:
+                out.remove("L")
+        
         return ''.join(out)
     
     def get_dist(start_pos,end_pos):
@@ -222,7 +246,7 @@ def main_loop():
                     food_in_snake = False
         food_spawn = True
         
-        
+        # Pathfinding and stats
         if dir_array == []:
             print("Snake Position:",snake_pos,"        Food Position:",food_pos)
             print("Snake body:",snake_body)
@@ -231,6 +255,7 @@ def main_loop():
             print(dir_array,"\n")
         direction = dir_array.pop(0)
 
+        # Draw Snake
         game_window.fill(white)
         for pos in snake_body:
             pygame.draw.rect(game_window, green, pygame.Rect(pos[0], pos[1], 50, 50))
